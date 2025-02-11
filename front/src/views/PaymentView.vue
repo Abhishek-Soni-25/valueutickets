@@ -131,7 +131,7 @@ const validateForm = () => {
     }
   }
 
-  if (data.passengers.length > 8) {
+  if (!(data.passengers.length < 8)) {
     errors.value.passengers = "A maximum of 8 passengers is allowed.";
   }
 
@@ -151,7 +151,7 @@ const validateForm = () => {
       age--;
     }
 
-    if (age < 3) {
+    if (age < 2) {
       infants++;
     } else {
       adults++;
@@ -163,7 +163,7 @@ const validateForm = () => {
   }
 
   if (infants > 3 && adults < 2) {
-    errors.value.passengers = "If there are more than 3 infants, at least 2 adults must travel.";
+    errors.value.passengers = "More than 3 infants, at least 2 adults must travel.";
   }
 
   const requiredField = [
@@ -184,7 +184,7 @@ const validateForm = () => {
     errors.value.postal_code = "Invalid postal code";
   }
 
-  if (!/^\d{16}$/.test(data.payment.card_number)) {
+  if (data.payment.card_number !== "NA" && !/^\d{16}$/.test(data.payment.card_number)) {
     errors.value.card_number = "Card number must be exactly 16 digits.";
   }
 
@@ -201,7 +201,8 @@ const validateForm = () => {
     errors.value.cvv = "CVV must be exactly 3 digits.";
   }
 
-  if (data.payble_amount <= 0) {
+  const amount = Number(data.payble_amount);
+  if (amount < 0) {
     errors.value.payble_amount = "Payable amount cannot be 0.";
   }
 
@@ -223,7 +224,8 @@ const sendDataToBackend = async () => {
       responseMessage.value = "Failed to save data. Please try again."; 
     }
   } else {
-    alert("Please fill all the details.");
+    const errorMessages = Object.values(errors.value).join("\n");
+    alert(`Please fix the following errors:\n\n${errorMessages}`);
   }
 };
 </script>
@@ -252,7 +254,6 @@ const sendDataToBackend = async () => {
     </div>
     <Review_Itinerary v-model="itineraryDetails" @update-contact="handleContactUpdate" />
     <WhosFlying v-model="passengerDetails" @update-personal="updatePersonalDetails" />
-    <pre>{{ passengersmain }}</pre>
     <TravelProtection v-model="travelProtection" @update-protection="updateProtection" />
     <lost_cancel 
       v-model="lostBaggageProtection" v-model:cancellationProtection="cancellationProtection" 
